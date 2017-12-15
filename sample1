@@ -1,0 +1,22 @@
+Option Explicit
+Sub CopyColumns()
+    Dim wbkA As Workbook
+    Dim wbkB As Workbook
+    
+    ' Specify source and target files
+    ' Source and target file names to be different
+    Set wbkA = Workbooks.Open("C:\Projects\src\source.xlsx")
+    Set wbkB = Workbooks.Open("C:\Projects\trg\target.xlsx")
+    
+    ' Copy statements
+    wbkA.Sheets("Sheet1").Range("A:A").Copy Destination:=wbkB.Sheets("Sheet1").Range("H:H")
+    wbkA.Sheets("Sheet1").Range("B:B").Copy Destination:=wbkB.Sheets("Sheet1").Range("I:I")
+    wbkA.Sheets("Sheet1").Range("C:C").Copy Destination:=wbkB.Sheets("Sheet1").Range("J:J")
+    wbkA.Sheets("Sheet1").Range("D3").Copy Destination:=wbkB.Sheets("Sheet1").Range("K3")
+    wbkA.Sheets("Sheet1").Range("E1:G3").Copy Destination:=wbkB.Sheets("Sheet1").Range("L1:N3")
+
+    wbkA.Close savechanges:=False
+    wbkB.Close savechanges:=True
+    'Set wbkA = Nothing
+    'Set wbkB = Nothing
+End Sub
