@@ -1,0 +1,26 @@
+Sub CopyColumns()
+    MyDir = ActiveWorkbook.path
+    DataDir = MyDir & "\"
+    ChDir (DataDir)
+    Nextfile = Dir("*.xlsx")
+    While Nextfile <> ""
+        Workbooks.Open (Nextfile)
+        
+        'Copy column A to column B
+        Workbooks(Nextfile).ActiveSheet.Range("A:A").Select
+        Selection.Copy
+        Workbooks(Nextfile).ActiveSheet.Range("B:B").Select
+        Workbooks(Nextfile).ActiveSheet.Paste
+        
+        'Copy column C to column D
+        Workbooks(Nextfile).ActiveSheet.Range("C:C").Select
+        Selection.Copy
+        Workbooks(Nextfile).ActiveSheet.Range("D:D").Select
+        Workbooks(Nextfile).ActiveSheet.Paste
+        
+        Application.CutCopyMode = False
+        Workbooks(Nextfile).Save
+        Workbooks(Nextfile).Close
+        Nextfile = Dir()
+    Wend
+End Sub
