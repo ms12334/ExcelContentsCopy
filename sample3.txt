@@ -1,0 +1,114 @@
+   Dim fileName1 As String, fileName2 As String, fileName3 As String
+   Dim wb1 As Workbook, wb2 As Workbook, wb3 As Workbook
+   Dim sourceSheet As String, targetSheet As String, sourceCell As String, targetCell As String
+     
+Private Sub UserForm1_Initialize()
+   txtBox1.Value = ""
+   txtBox2.Value = ""
+   txtBox3.Value = ""
+   txtBox1.SetFocus
+   OptionButton1.Value = True
+   Label5.Visible = False
+End Sub
+
+Private Sub CommandButton1_Click()
+   On Error GoTo err_handler
+      ChDir (ActiveWorkbook.Path & "\")
+      fileName1 = Application.GetOpenFilename("Microsoft Excel Files, *.xls*")
+      Set wb1 = Workbooks.Open(fileName1)
+      txtBox1.Value = fileName1
+      txtBox2.SetFocus
+   Exit Sub
+err_handler:
+   MsgBox "Please select an Excel file."
+End Sub
+
+Private Sub CommandButton2_Click()
+   On Error GoTo err_handler
+      ChDir (ActiveWorkbook.Path & "\")
+      fileName2 = Application.GetOpenFilename("Microsoft Excel Files, *.xls*")
+      Set wb2 = Workbooks.Open(fileName2)
+      txtBox2.Value = fileName2
+      txtBox3.SetFocus
+   Exit Sub
+err_handler:
+   MsgBox "Please select an Excel file."
+End Sub
+
+Private Sub CommandButton3_Click()
+   On Error GoTo err_handler
+      ChDir (ActiveWorkbook.Path & "\")
+      fileName3 = Application.GetOpenFilename("Microsoft Excel Files, *.xls*")
+      Set wb3 = Workbooks.Open(fileName3)
+      txtBox3.Value = fileName3
+      CommandButton4.SetFocus
+   Exit Sub
+err_handler:
+   MsgBox "Please select an Excel file."
+End Sub
+
+
+Private Sub CommandButton4_Click()
+   Dim i As Integer
+   i = 1
+   
+   Do While wb3.Sheets("Sheet1").Range("A" & i).Value <> ""
+      sourceSheet = wb3.Sheets("Sheet1").Range("A" & i).Value
+      sourceCell = wb3.Sheets("Sheet1").Range("B" & i).Value
+      targetSheet = wb3.Sheets("Sheet1").Range("C" & i).Value
+      targetCell = wb3.Sheets("Sheet1").Range("D" & i).Value
+      
+      If WorksheetExists(sourceSheet, wb1) And WorksheetExists(targetSheet, wb2) Then
+            wb1.Sheets(sourceSheet).Range(sourceCell).Copy Destination:=wb2.Sheets(targetSheet).Range(targetCell)
+            
+            'OptionButton1 = No Change, OptionButton2 = Yellow, OptionButton3 = Light Blue, OptionButton4 = Green
+            If OptionButton2.Value Then
+               wb2.Sheets(targetSheet).Range(targetCell).Interior.Color = RGB(255, 255, 0)
+            ElseIf OptionButton3.Value Then
+               wb2.Sheets(targetSheet).Range(targetCell).Interior.Color = RGB(0, 255, 255)
+            ElseIf OptionButton4.Value Then
+               wb2.Sheets(targetSheet).Range(targetCell).Interior.Color = RGB(0, 255, 0)
+            End If
+            
+            wb3.Sheets("Sheet1").Range("E" & i) = "Copied"
+            wb3.Sheets("Sheet1").Range("E" & i).Font.Color = vbGreen
+      Else
+            If Not WorksheetExists(sourceSheet, wb1) And Not WorksheetExists(targetSheet, wb2) Then
+                wb3.Sheets("Sheet1").Range("E" & i) = "Not Copied - Couldn't find " & sourceSheet & " and " & targetSheet
+            ElseIf Not WorksheetExists(sourceSheet, wb1) Then
+                wb3.Sheets("Sheet1").Range("E" & i) = "Not Copied - Couldn't find " & sourceSheet & " in Copy From file"
+            ElseIf Not WorksheetExists(targetSheet, wb2) Then
+                wb3.Sheets("Sheet1").Range("E" & i) = "Not Copied - Couldn't find " & targetSheet & " in Paste To file"
+            End If
+            wb3.Sheets("Sheet1").Range("E" & i).Font.Color = vbRed
+      End If
+      i = i + 1
+   Loop
+   
+   'Close Excel files
+   wb1.Close savechanges:=False
+   wb2.Close savechanges:=True
+   wb3.Close savechanges:=True
+   
+   'Reset UserForm1
+   txtBox1.Value = ""
+   txtBox2.Value = ""
+   txtBox3.Value = ""
+   txtBox1.SetFocus
+   Label5.Visible = True
+   OptionButton1.Value = True
+End Sub
+
+Function WorksheetExists(WorksheetName As String, Optional wb As Workbook) As Boolean
+   If wb Is Nothing Then Set wb = ThisWorkbook
+   With wb
+      On Error Resume Next
+      WorksheetExists = (.Sheets(WorksheetName).Name = WorksheetName)
+      On Error GoTo 0
+   End With
+End Function
+
+Private Sub CommandButton5_Click()
+   UserForm1_Initialize
+End Sub
+
